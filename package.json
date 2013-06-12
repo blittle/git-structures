@@ -1,6 +1,6 @@
 {
   "name": "git-structures",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Generate data structures of a git repository",
   "main": "app.js",
   "scripts": {
@@ -15,7 +15,8 @@
   "readmeFilename": "README.md",
   "gitHead": "70c8428314d909c3fb063a2bb18b233a60a2eae3",
   "dependencies": {
-    "lodash": "~1.2.1"
+    "lodash": "~1.2.1",
+    "json3": "~3.2.4"
   },
   "devDependencies": {
     "mocha": "latest"
