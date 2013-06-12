@@ -1,0 +1,23 @@
+{
+  "name": "git-structures",
+  "version": "0.0.0",
+  "description": "Generate data structures of a git repository",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blittle/git-structures"
+  },
+  "author": "Bret Little",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "70c8428314d909c3fb063a2bb18b233a60a2eae3",
+  "dependencies": {
+    "lodash": "~1.2.1"
+  },
+  "devDependencies": {
+    "mocha": "latest"
+  }
+}
