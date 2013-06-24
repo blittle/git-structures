@@ -25,6 +25,7 @@ var actions = {
             
         });
     },
+    "T": function(path, map) {},
     "M": function modifyFile(path, map) {
         var folders = path.split('/'); 
 
