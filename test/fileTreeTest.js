@@ -1,4 +1,5 @@
-var GitStruct = require('../app.js');
+var FileTree = require('../app.js').fileTree;
+
 var assert = require('assert');
 var fs = require('fs');
 var parsedData = require('./test.json');
@@ -8,7 +9,7 @@ describe('Tree structure', function() {
     var tree;
 
     beforeEach(function() {
-        tree = GitStruct.fileTree(parsedData);
+        tree = FileTree.fileTree(parsedData);
     });
 
     it('Should map a base file', function() {
@@ -44,7 +45,7 @@ describe('Tree structure', function() {
 
     it('Should preserve deletions', function() {
 
-        tree = GitStruct.fileTree(parsedData, {preserveDeletions: true});
+        tree = FileTree.fileTree(parsedData, {preserveDeletions: true});
 
         assert.equal(true, tree.c['node_modules'].c.lodash.c['README.md'].deleted);
         assert.equal(true, tree.c['node_modules'].c.lodash.c.test.c.template.c['b.jst'].deleted);
@@ -56,5 +57,19 @@ describe('Tree structure', function() {
 
     it('Should remove empty directories from the tree structure', function() {
         assert.equal(undefined, tree.c['node_modules']);
+    });
+
+    it('Should generate a code flower structure', function() {
+        var flower = FileTree.codeFlower(tree);
+
+        assert.equal("README.md", flower.children[0].name);
+        assert.equal(6, flower.children[0].size);
+        assert.equal("md", flower.children[0].language);
+
+        assert.equal("test", flower.children[4].name);
+        assert.equal("multiPath", flower.children[4].children[2].name);
+        assert.equal("component.json", flower.children[4].children[2].children[0].name);
+        assert.equal("json", flower.children[4].children[2].children[0].language);
+        assert.equal(2, flower.children[4].children[2].children[0].size);
     });
 });

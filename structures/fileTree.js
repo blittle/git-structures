@@ -55,8 +55,8 @@ var actions = {
     }
 }
 
-fileTree = function(data, options) {
-    var mappedFiles = {c: {}};
+var fileTree = function(data, options) {
+    var mappedFiles = {name: "root", c: {}};
 
     options = options || {};
 
@@ -71,4 +71,29 @@ fileTree = function(data, options) {
     return mappedFiles;
 }
 
-module.exports = fileTree;
+function toCodeFlower(data) {
+
+    var newData = {
+        name: data.name
+    };
+
+    if(data.changes) {
+        newData.size = data.changes;
+        newData.language = getLanguage(data.name);
+    } else {
+        newData.children = _.map(data.c, toCodeFlower);
+    }
+
+    return newData;
+}
+
+function getLanguage(name) {
+    var i = name.lastIndexOf('.');
+    if(i === -1) return "none";
+    return name.substring(i+1);
+}
+
+module.exports = {
+    fileTree: fileTree,
+    codeFlower: toCodeFlower
+}
