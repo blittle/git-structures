@@ -83,6 +83,10 @@ function toCodeFlower(data) {
         newData.language = getLanguage(data.name);
     } else {
         newData.children = _.map(data.c, toCodeFlower);
+        newData.children = _.filter(newData.children, function(c) {
+            if(c.size) return c.size > 1;
+            return c.children.length > 0;
+        });
     }
 
     return newData;

@@ -66,10 +66,9 @@ describe('Tree structure', function() {
         assert.equal(6, flower.children[0].size);
         assert.equal("md", flower.children[0].language);
 
-        assert.equal("test", flower.children[4].name);
-        assert.equal("multiPath", flower.children[4].children[2].name);
-        assert.equal("component.json", flower.children[4].children[2].children[0].name);
-        assert.equal("json", flower.children[4].children[2].children[0].language);
-        assert.equal(2, flower.children[4].children[2].children[0].size);
+        assert.equal("multiPath", flower.children[4].children[0].name);
+        assert.equal("component.json", flower.children[4].children[0].children[0].name);
+        assert.equal("json", flower.children[4].children[0].children[0].language);
+        assert.equal(2, flower.children[4].children[0].children[0].size);
     });
 });
