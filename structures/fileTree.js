@@ -3,7 +3,7 @@ var _ = require('lodash');
 var actions = {
     "A": function addFile(path, map) {
         var folders = path.split('/');
-        
+
         _.each(folders, function(f, i) {
             var isFile = (i === folders.length-1);
 
@@ -13,7 +13,7 @@ var actions = {
                     parent: map,
                     name: f
                 }
-            } 
+            }
 
             if(!isFile) {
                 map = map.c[f];
@@ -22,24 +22,31 @@ var actions = {
                 map.c[f].changes = 1;
                 if(map.deleted) delete map.c[f].deleted;
             }
-            
+
         });
     },
     "T": function(path, map) {},
     "M": function modifyFile(path, map) {
-        var folders = path.split('/'); 
+        var folders = path.split('/');
+
+        var tmap = map;
 
         _.each(folders, function(f, i) {
+            if(!map) return;
             map = map.c[f]
         });
-        map.changes = map.changes + 1;
+
+        if(map && map.changes) map.changes = map.changes + 1;
     },
     "D": function removeFile(path, map, options) {
         var folders = path.split('/');
 
         _.each(folders, function(f) {
-            map = map.c[f]; 
+            if(!map) return;
+            map = map.c[f];
         });
+
+        if(!map) return;
 
         if(options.preserveDeletions) {
             map.deleted = true;
@@ -51,7 +58,7 @@ var actions = {
             while(map && map.parent && _.isEmpty(map.c)) {
                 delete map.parent.c[map.name];
                 map = map.parent;
-            }  
+            }
         }
     }
 }
@@ -66,7 +73,7 @@ var fileTree = function(data, options) {
     // upon the actual order of commits
     for(var i=data.length-1; i >= 0; i--) {
         _.each(data[i].files, function(file) {
-            actions[file.type](file.path, mappedFiles, options);                        
+            actions[file.type](file.path, mappedFiles, options);
         });
     }
     return mappedFiles;

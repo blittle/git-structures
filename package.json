@@ -1,6 +1,6 @@
 {
   "name": "git-structures",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Generate data structures of a git repository",
   "main": "app.js",
   "scripts": {
