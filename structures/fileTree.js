@@ -63,40 +63,21 @@ var actions = {
     }
 }
 
-var fileTree = function(data, options) {
-    var mappedFiles = {name: "root", c: {}};
+function fileTreeIndex(data, mappedFiles, index, options) {
 
-    options = options || {};
+    verifyOrder(data);
 
-    // The parsed data comes in with newest commits
-    // first, we want to build a tree structure based
-    // upon the actual order of commits
-    for(var i=data.length-1; i >= 0; i--) {
-        _.each(data[i].files, function(file) {
-            actions[file.type](file.path, mappedFiles, options);
-        });
-    }
+    _.each(data[index].files, function(file) {
+        actions[file.type](file.path, mappedFiles, options);
+    });
+
     return mappedFiles;
 }
 
-function toCodeFlower(data) {
-
-    var newData = {
-        name: data.name
-    };
-
-    if(data.changes) {
-        newData.size = data.changes;
-        newData.language = getLanguage(data.name);
-    } else {
-        newData.children = _.map(data.c, toCodeFlower);
-        newData.children = _.filter(newData.children, function(c) {
-            if(c.size) return c.size > 1;
-            return c.children.length > 0;
-        });
+function verifyOrder(data) {
+    if(data.length > 1 && new Date(data[0].date).getTime() > new Date(data[1].date).getTime()) {
+        data.reverse();
     }
-
-    return newData;
 }
 
 function getLanguage(name) {
@@ -106,6 +87,56 @@ function getLanguage(name) {
 }
 
 module.exports = {
-    fileTree: fileTree,
-    codeFlower: toCodeFlower
+    fileTree: function(data, options) {
+        var mappedFiles = {name: "root", c: {}};
+
+        options = options || {};
+
+        verifyOrder(data);
+
+        for(var i=0; i < data.length; i++) {
+            fileTreeIndex(data, mappedFiles, i, options);
+        }
+        return mappedFiles;
+    },
+    fileTreeHistory: function(data, options) {
+        verifyOrder(data);
+
+        options = options || {};
+
+        var history = [];
+
+        var mappedFiles = {name: "root", c: {}};
+
+        for(var i=0; i < data.length; i++) {
+            history.push(
+                this.codeFlower(
+                    fileTreeIndex(data, mappedFiles, i, options), {size: (options.size || 1)}
+                )
+            );
+        }
+
+        return history;
+    },
+    codeFlower: function toCodeFlower(data, options) {
+
+        var newData = {
+            name: data.name
+        };
+
+        options = _.extend({size: 1}, options);
+
+        if(data.changes) {
+            newData.size = data.changes;
+            newData.language = getLanguage(data.name);
+        } else {
+            newData.children = _.map(data.c, toCodeFlower);
+            newData.children = _.filter(newData.children, function(c) {
+                if(c.size) return c.size > options.size;
+                return c.children.length > 0;
+            });
+        }
+
+        return newData;
+    }
 }
